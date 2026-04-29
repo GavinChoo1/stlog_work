@@ -11,9 +11,6 @@ node_modules/
 dist/
 .eslintcache
 
-# Databases
-pg_db/
-redis_db/
 
 # IDEs
 .vscode/

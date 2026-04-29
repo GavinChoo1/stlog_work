@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  # Add this Redis section
+  redis:
+    image: redis:7-alpine
+    container_name: local-redis
+    restart: always
+    ports:
+      - "6379:6379"  # 6379 is the default Redis port
+    volumes:
+      - redisdata:/data
+
+volumes:
+  redisdata:
