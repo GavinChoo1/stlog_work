@@ -32,7 +32,15 @@ function Login() {
       }
 
       setSuccess('Login successful! Redirecting...')
-      console.log('Token:', data.token)
+      
+      // Store token and username
+      localStorage.setItem('token', data.token)
+      localStorage.setItem('username', username)
+
+      setTimeout(() => {
+        navigate('/dashboard')
+      }, 1500)
+      
     } catch (err) {
       setError(err.message)
     } finally {
@@ -89,14 +97,6 @@ function Login() {
             disabled={isLoading}
           >
             {isLoading ? 'Signing in...' : 'Sign In'}
-          </button>
-
-          <button
-            type="button"
-            className="reset-password-btn"
-            onClick={() => navigate('/reset-password')}
-          >
-            Reset Password
           </button>
         </form>
       </div>

@@ -10,15 +10,21 @@ from .connections import pg_db, redis_conn
 # Log to redis
 ################ 
 def log_event_to_redis(username, ret):
-    """Logs a login event (success/fail/error) to a Redis list."""
     r = redis_conn()
+    now = int(time.time())
+    expiry_time = now + 600  # 10 minutes from now
+    
     log_entry = {
-        "timestamp": int(time.time()),
+        "timestamp": now,
         "username": username,
         "ret": ret
     }
-    r.lpush("login_logs", json.dumps(log_entry))
-    r.ltrim("login_logs", 0, 99)
+    
+    # Add to Sorted Set: Score is the expiration time
+    r.zadd("login_logs", {json.dumps(log_entry): expiry_time})
+    
+    # Cleanup: Remove all entries where the score (expiry) is less than 'now'
+    r.zremrangebyscore("login_logs", "-inf", now)
 
 
 

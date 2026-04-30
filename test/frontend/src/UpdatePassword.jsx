@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './App.css'
 
-function ResetPassword() {
+function UpdatePassword() {
   const [username, setUsername] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -10,6 +10,17 @@ function ResetPassword() {
   const [success, setSuccess] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    // Check if user is logged in
+    const token = localStorage.getItem('token')
+    const storedUsername = localStorage.getItem('username')
+    if (!token) {
+      navigate('/')
+    } else if (storedUsername) {
+      setUsername(storedUsername)
+    }
+  }, [navigate])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -24,10 +35,12 @@ function ResetPassword() {
     setIsLoading(true)
 
     try {
+      const token = localStorage.getItem('token')
       const response = await fetch('http://localhost:8000/reset-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ 
           username, 
@@ -38,12 +51,12 @@ function ResetPassword() {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.detail || 'Reset failed')
+        throw new Error(data.detail || 'Update failed')
       }
 
-      setSuccess('Password reset successful! Redirecting to login...')
+      setSuccess('Password updated successfully! Redirecting to dashboard...')
       setTimeout(() => {
-        navigate('/')
+        navigate('/dashboard')
       }, 3000)
     } catch (err) {
       setError(err.message)
@@ -59,7 +72,7 @@ function ResetPassword() {
 
       <div className="login-card">
         <div className="login-header">
-          <h1>Reset Password</h1>
+          <h1>Update Password</h1>
           <p>Set a new password for your account</p>
         </div>
 
@@ -75,7 +88,7 @@ function ResetPassword() {
                 id="username"
                 placeholder="Enter your username"
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                disabled
                 required
               />
             </div>
@@ -114,15 +127,15 @@ function ResetPassword() {
             className="login-button"
             disabled={isLoading}
           >
-            {isLoading ? 'Resetting...' : 'Reset Password'}
+            {isLoading ? 'Updating...' : 'Update Password'}
           </button>
 
           <button
             type="button"
             className="reset-password-btn"
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/dashboard')}
           >
-            Back to Login
+            Back to Dashboard
           </button>
         </form>
       </div>
@@ -130,4 +143,4 @@ function ResetPassword() {
   )
 }
 
-export default ResetPassword
+export default UpdatePassword

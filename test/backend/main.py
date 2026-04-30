@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, HTTPException, status, Header
 from fastapi.middleware.cors import CORSMiddleware
 from funcs.auth_func import auth_check, reset_password_in_db
 
@@ -55,7 +55,12 @@ def login(data: LoginRequest):
         )
 
 @app.post("/reset-password")
-def reset_password(data: ResetPasswordRequest):
+def reset_password(data: ResetPasswordRequest, authorization: str = Header(None)):
+    if authorization != "Bearer fake-jwt-token":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authentication required"
+        )
     try:
         success, message = reset_password_in_db(data.username, data.new_password)
         if not success:
