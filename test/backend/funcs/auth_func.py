@@ -9,24 +9,24 @@ from .connections import pg_db, redis_conn
 ################ 
 # Log to redis
 ################ 
-def log_event_to_redis(username, ret):
+def place_order_to_redis(username, order_details):
     r = redis_conn()
-    now = int(time.time())
-    expiry_time = now + 600  # 10 minutes from now
     
-    log_entry = {
-        "timestamp": now,
+    # Data must be a flat dictionary (field-value pairs)
+    order_entry = {
         "username": username,
-        "ret": ret
+        "item": order_details['item'],
+        "amount": order_details['amount'],
+        "status": "pending",
+        "timestamp": int(time.time())
     }
     
-    # Add to Sorted Set: Score is the expiration time
-    r.zadd("login_logs", {json.dumps(log_entry): expiry_time})
+    # id='*' tells Redis to auto-generate a unique time-based ID
+    # maxlen=1000 keeps the buffer manageable
+    order_id = r.xadd("orders_stream", order_entry, id='*', maxlen=1000, approximate=True)
     
-    # Cleanup: Remove all entries where the score (expiry) is less than 'now'
-    r.zremrangebyscore("login_logs", "-inf", now)
-
-
+    print(f"Order placed! Redis ID: {order_id}")
+    return order_id
 
 
 
