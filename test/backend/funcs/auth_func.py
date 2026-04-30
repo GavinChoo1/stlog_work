@@ -54,8 +54,42 @@ def auth_check(username, password):
 
     except Exception as error:
         print(f"Error connecting to Postgres: {error}")
-        log_event_to_redis(username, f"Error: Database issue - {str(error)}")
+        log_event_to_redis(username, 1000)
         return None  # Indicate database error
+
+    finally:
+        if connection:
+            cursor.close()
+            connection.close()
+
+############################################################################
+# Reset password
+############################################################################
+def reset_password_in_db(username, new_password):
+    connection = None
+    try:
+        connection = pg_db()
+        cursor = connection.cursor()
+
+        # 1. Check if username exists
+        cursor.execute("SELECT 1 FROM hls_db.account.users WHERE username = %s;", (username,))
+        if cursor.fetchone() is None:
+            return False, "Username not found"
+
+        # 2. Update password
+        cursor.execute(
+            "UPDATE hls_db.account.users SET password_hash = %s WHERE username = %s;",
+            (new_password, username)
+        )
+        connection.commit()
+        
+        # Log the event
+        log_event_to_redis(username, 2000) # 2000 for password reset success
+        return True, "Password reset successful"
+
+    except Exception as error:
+        print(f"Error resetting password: {error}")
+        return False, "Database error"
 
     finally:
         if connection:

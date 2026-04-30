@@ -1,14 +1,16 @@
 from pydantic import BaseModel
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
-from funcs.auth_func import auth_check
+from funcs.auth_func import auth_check, reset_password_in_db
 
 class LoginRequest(BaseModel):
     username: str
     password: str
 
 class ResetPasswordRequest(BaseModel):
-    email: str
+    username: str
+    new_password: str
+
 
 app = FastAPI()
 
@@ -55,12 +57,13 @@ def login(data: LoginRequest):
 @app.post("/reset-password")
 def reset_password(data: ResetPasswordRequest):
     try:
-        if not data.email:
+        success, message = reset_password_in_db(data.username, data.new_password)
+        if not success:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Email is required"
+                detail=message
             )
-        return {"message": f"Password reset instructions have been sent to {data.email}"}
+        return {"message": message}
     except HTTPException:
         raise
     except Exception:
@@ -68,6 +71,7 @@ def reset_password(data: ResetPasswordRequest):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An unexpected error occurred during password reset"
         )
+
 
 
 

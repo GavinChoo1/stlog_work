@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import './App.css'
 
 function ResetPassword() {
-  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -13,6 +15,12 @@ function ResetPassword() {
     e.preventDefault()
     setError('')
     setSuccess('')
+
+    if (newPassword !== confirmPassword) {
+      setError('Passwords do not match')
+      return
+    }
+
     setIsLoading(true)
 
     try {
@@ -21,7 +29,10 @@ function ResetPassword() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ 
+          username, 
+          new_password: newPassword 
+        }),
       })
 
       const data = await response.json()
@@ -30,7 +41,10 @@ function ResetPassword() {
         throw new Error(data.detail || 'Reset failed')
       }
 
-      setSuccess(data.message)
+      setSuccess('Password reset successful! Redirecting to login...')
+      setTimeout(() => {
+        navigate('/')
+      }, 3000)
     } catch (err) {
       setError(err.message)
     } finally {
@@ -46,7 +60,7 @@ function ResetPassword() {
       <div className="login-card">
         <div className="login-header">
           <h1>Reset Password</h1>
-          <p>Enter your email to receive a reset link</p>
+          <p>Set a new password for your account</p>
         </div>
 
         {error && <div className="error-message">{error}</div>}
@@ -54,14 +68,42 @@ function ResetPassword() {
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="email">Email Address</label>
+            <label htmlFor="username">Username</label>
             <div className="input-wrapper">
               <input
-                type="email"
-                id="email"
-                placeholder="name@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="text"
+                id="username"
+                placeholder="Enter your username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="newPassword">New Password</label>
+            <div className="input-wrapper">
+              <input
+                type="password"
+                id="newPassword"
+                placeholder="••••••••"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="confirmPassword">Confirm Password</label>
+            <div className="input-wrapper">
+              <input
+                type="password"
+                id="confirmPassword"
+                placeholder="••••••••"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 required
               />
             </div>
@@ -72,7 +114,7 @@ function ResetPassword() {
             className="login-button"
             disabled={isLoading}
           >
-            {isLoading ? 'Sending...' : 'Send Reset Link'}
+            {isLoading ? 'Resetting...' : 'Reset Password'}
           </button>
 
           <button
