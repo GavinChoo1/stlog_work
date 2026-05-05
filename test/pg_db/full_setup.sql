@@ -17,6 +17,14 @@ CREATE DATABASE cold_db OWNER admin;
 
 CREATE SCHEMA IF NOT EXISTS general;
 CREATE SCHEMA IF NOT EXISTS orders;
+CREATE TABLE IF NOT EXISTS orders.orders (
+    order_id SERIAL PRIMARY KEY,
+    item VARCHAR(255) NOT NULL,
+    quantity INT NOT NULL,
+    created_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+ALTER TABLE orders.orders OWNER TO admin;
 
 ALTER SCHEMA general OWNER TO admin;
 ALTER SCHEMA orders OWNER TO admin;
