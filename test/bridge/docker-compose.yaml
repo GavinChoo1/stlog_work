@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  bridge:
+    build: .
+    container_name: redis-kafka-bridge
+    restart: always
+    environment:
+      - REDIS_HOST=local-redis
+      - REDIS_PORT=6379
+      - REDIS_STREAM=events:*
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - KAFKA_TOPIC=login_events
+    networks:
+      - bridge-net
+
+networks:
+  bridge-net:
+    name: stlog_network
+    external: true

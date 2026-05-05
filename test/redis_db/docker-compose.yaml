@@ -10,14 +10,23 @@ services:
       - "6379:6379"
     volumes:
       - redisdata:/data
+    networks:
+      - stlog_network
 
-  # Redis Insight Service (Now correctly aligned with 'redis')
+  # Redis Insight Service
   redisinsight:
     image: redis/redisinsight:latest
     container_name: local-redisinsight
     restart: always
     ports:
       - "8001:5540"
+    networks:
+      - stlog_network
+
+networks:
+  stlog_network:
+    name: stlog_network
+    external: true
 
 volumes:
   redisdata:

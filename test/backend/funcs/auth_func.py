@@ -12,7 +12,7 @@ from .connections import pg_db, redis_conn
 import json
 import time
 
-def log_event_to_redis(username, ret):
+def log_auth_login(username, ret):
     """Logs a login event to a Redis Stream with automatic capping."""
     r = redis_conn()
     
@@ -28,7 +28,7 @@ def log_event_to_redis(username, ret):
     # fields: the dictionary
     # maxlen: 100 (Keep roughly the last 100 entries)
     # approximate: True (Uses '~' for better performance)
-    r.xadd("login_stream", log_entry, maxlen=100, approximate=True)
+    r.xadd("events:auth:login_stream", log_entry, maxlen=100, approximate=True)
 
 
 
@@ -47,23 +47,23 @@ def auth_check(username, password):
         row = cursor.fetchone()
 
         if row is None:
-            log_event_to_redis(username, 1001)
+            log_auth_login(username, 1001)
             return False
         
         # 2. Check if password matches
         db_password = row[0]
         if db_password == password:
             # Both correct
-            log_event_to_redis(username, 0)
+            log_auth_login(username, 0)
             return True
         else:
-            log_event_to_redis(username, 1002)
+            log_auth_login(username, 1002)
             return False
 
 
     except Exception as error:
         print(f"Error connecting to Postgres: {error}")
-        log_event_to_redis(username, 1000)
+        log_auth_login(username, 1000)
         return None  # Indicate database error
 
     finally:
@@ -93,7 +93,7 @@ def reset_password_in_db(username, new_password):
         connection.commit()
         
         # Log the event
-        log_event_to_redis(username, 2000) # 2000 for password reset success
+        log_auth_login(username, 2000) # 2000 for password reset success
         return True, "Password reset successful"
 
     except Exception as error:

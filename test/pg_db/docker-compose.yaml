@@ -14,5 +14,11 @@ services:
       # 1. Bind Mount for persistent data
       - ./pg_data:/var/lib/postgresql/data
       # 2. Bind Mount for your initial SQL script
-      # This script will now create hot_db, and cold_db
       - ./full_setup.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - stlog_network
+
+networks:
+  stlog_network:
+    name: stlog_network
+    external: true
