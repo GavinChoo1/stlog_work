@@ -16,36 +16,39 @@ function Dashboard() {
       <div className="bg-blob blob-1"></div>
       <div className="bg-blob blob-2"></div>
 
-      <div className="login-card">
+      <div className="login-card" style={{ maxWidth: '600px' }}>
         <div className="login-header">
           <h1>Welcome, {username}!</h1>
           <p>You are now logged in.</p>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '2rem' }}>
-          <button
-            className="login-button"
+        <div className="dashboard-actions">
+          <div 
+            className="action-card"
             onClick={() => navigate('/order')}
-            style={{ background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)' }}
           >
-            Fill New Order
-          </button>
+            <div className="action-icon">📝</div>
+            <h3>Fill New Order</h3>
+            <p>Submit a new transport request</p>
+          </div>
 
-          <button
-            className="login-button"
+          <div 
+            className="action-card"
             onClick={() => navigate('/update-password')}
-            style={{ background: 'rgba(255, 255, 255, 0.1)' }}
           >
-            Update Password
-          </button>
-
-          <button
-            className="reset-password-btn"
-            onClick={handleLogout}
-          >
-            Sign Out
-          </button>
+            <div className="action-icon">🔐</div>
+            <h3>Update Password</h3>
+            <p>Secure your account</p>
+          </div>
         </div>
+
+        <button
+          className="reset-password-btn"
+          onClick={handleLogout}
+          style={{ marginTop: '2rem' }}
+        >
+          Sign Out
+        </button>
       </div>
     </div>
   )

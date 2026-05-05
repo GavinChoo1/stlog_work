@@ -43,7 +43,7 @@ def auth_check(username, password):
         cursor = connection.cursor()
 
         # 1. Check if username exists
-        cursor.execute("SELECT password_hash FROM hls_db.accounts.users WHERE username = %s;", (username,))
+        cursor.execute("SELECT password_hash FROM general.accounts WHERE username = %s;", (username,))
         row = cursor.fetchone()
 
         if row is None:
@@ -81,13 +81,13 @@ def reset_password_in_db(username, new_password):
         cursor = connection.cursor()
 
         # 1. Check if username exists
-        cursor.execute("SELECT 1 FROM hls_db.accounts.users WHERE username = %s;", (username,))
+        cursor.execute("SELECT 1 FROM general.accounts WHERE username = %s;", (username,))
         if cursor.fetchone() is None:
             return False, "Username not found"
 
         # 2. Update password
         cursor.execute(
-            "UPDATE hls_db.accounts.users SET password_hash = %s WHERE username = %s;",
+            "UPDATE general.accounts SET password_hash = %s WHERE username = %s;",
             (new_password, username)
         )
         connection.commit()
