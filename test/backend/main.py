@@ -95,5 +95,3 @@ def submit_order(data: OrderRequest, authorization: str = Header(None)):
     return {"message": "Order submitted successfully!", "order_id": "ORD-12345"}
 
 
-
-

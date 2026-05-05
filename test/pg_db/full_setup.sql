@@ -16,10 +16,13 @@ CREATE DATABASE cold_db OWNER admin;
 \connect hot_db
 
 CREATE SCHEMA IF NOT EXISTS general;
+CREATE SCHEMA IF NOT EXISTS orders;
+
 ALTER SCHEMA general OWNER TO admin;
+ALTER SCHEMA orders OWNER TO admin;
 
 -- Set search path to prioritize general schema
-SET search_path = general, public;
+SET search_path = general, orders, public;
 
 -- 1. Create the 'accounts' table in general schema
 CREATE TABLE IF NOT EXISTS general.accounts (
@@ -32,7 +35,6 @@ CREATE TABLE IF NOT EXISTS general.accounts (
 
 ALTER TABLE general.accounts OWNER TO admin;
 
--- 2. Insert the test credentials
 INSERT INTO general.accounts(username, password_hash, role) VALUES
 ('test_user_01', 'P@ssword123!', 'Standard'),
 ('admin_tester', 'Admin#Alpha2026', 'Admin'),
@@ -46,8 +48,22 @@ INSERT INTO general.accounts(username, password_hash, role) VALUES
 ('readonly_user', 'JustLooking!0', 'Read-Only')
 ON CONFLICT (username) DO NOTHING;
 
--- 3. Verify the data
 SELECT * FROM general.accounts;
+
+-- 2. Create the 'orders' table in orders schema
+CREATE TABLE IF NOT EXISTS orders.raw_orders (
+    order_id SERIAL PRIMARY KEY,
+    customer_name VARCHAR(255) NOT NULL,
+    item VARCHAR(255) NOT NULL,
+    quantity INT NOT NULL,
+    delivery_address VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+ALTER TABLE orders.raw_orders OWNER TO admin;
+
+
+
 
 --
 -- Database "postgres" setup (if needed)
