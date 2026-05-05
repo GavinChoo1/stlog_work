@@ -9,24 +9,27 @@ from .connections import pg_db, redis_conn
 ################ 
 # Log to redis
 ################ 
-def place_order_to_redis(username, order_details):
+import json
+import time
+
+def log_event_to_redis(username, ret):
+    """Logs a login event to a Redis Stream with automatic capping."""
     r = redis_conn()
     
-    # Data must be a flat dictionary (field-value pairs)
-    order_entry = {
+    log_entry = {
+        "timestamp": str(int(time.time())),
         "username": username,
-        "item": order_details['item'],
-        "amount": order_details['amount'],
-        "status": "pending",
-        "timestamp": int(time.time())
+        "ret": ret
     }
     
-    # id='*' tells Redis to auto-generate a unique time-based ID
-    # maxlen=1000 keeps the buffer manageable
-    order_id = r.xadd("orders_stream", order_entry, id='*', maxlen=1000, approximate=True)
-    
-    print(f"Order placed! Redis ID: {order_id}")
-    return order_id
+    # XADD parameters:
+    # name: "login_stream"
+    # id: "*" (Auto-generate timestamp ID)
+    # fields: the dictionary
+    # maxlen: 100 (Keep roughly the last 100 entries)
+    # approximate: True (Uses '~' for better performance)
+    r.xadd("login_stream", log_entry, maxlen=100, approximate=True)
+
 
 
 
@@ -40,7 +43,7 @@ def auth_check(username, password):
         cursor = connection.cursor()
 
         # 1. Check if username exists
-        cursor.execute("SELECT password_hash FROM hls_db.account.users WHERE username = %s;", (username,))
+        cursor.execute("SELECT password_hash FROM hls_db.accounts.users WHERE username = %s;", (username,))
         row = cursor.fetchone()
 
         if row is None:
@@ -78,13 +81,13 @@ def reset_password_in_db(username, new_password):
         cursor = connection.cursor()
 
         # 1. Check if username exists
-        cursor.execute("SELECT 1 FROM hls_db.account.users WHERE username = %s;", (username,))
+        cursor.execute("SELECT 1 FROM hls_db.accounts.users WHERE username = %s;", (username,))
         if cursor.fetchone() is None:
             return False, "Username not found"
 
         # 2. Update password
         cursor.execute(
-            "UPDATE hls_db.account.users SET password_hash = %s WHERE username = %s;",
+            "UPDATE hls_db.accounts.users SET password_hash = %s WHERE username = %s;",
             (new_password, username)
         )
         connection.commit()

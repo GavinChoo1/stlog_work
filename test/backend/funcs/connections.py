@@ -15,7 +15,7 @@ def pg_db():
         user="admin",
         password="admin123",
         host="127.0.0.1",
-        port="5432",
+        port="5433",
         database="hls_db"
     )
     return connection
