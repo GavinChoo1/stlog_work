@@ -25,7 +25,16 @@ function Dashboard() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '2rem' }}>
           <button
             className="login-button"
+            onClick={() => navigate('/order')}
+            style={{ background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)' }}
+          >
+            Fill New Order
+          </button>
+
+          <button
+            className="login-button"
             onClick={() => navigate('/update-password')}
+            style={{ background: 'rgba(255, 255, 255, 0.1)' }}
           >
             Update Password
           </button>

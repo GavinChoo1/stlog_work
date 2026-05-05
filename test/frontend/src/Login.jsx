@@ -38,7 +38,7 @@ function Login() {
       localStorage.setItem('username', username)
 
       setTimeout(() => {
-        navigate('/dashboard')
+        navigate('/order')
       }, 1500)
       
     } catch (err) {

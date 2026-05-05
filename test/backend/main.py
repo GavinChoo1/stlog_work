@@ -11,6 +11,12 @@ class ResetPasswordRequest(BaseModel):
     username: str
     new_password: str
 
+class OrderRequest(BaseModel):
+    customer_name: str
+    item: str
+    quantity: int
+    delivery_address: str
+
 
 app = FastAPI()
 
@@ -76,6 +82,17 @@ def reset_password(data: ResetPasswordRequest, authorization: str = Header(None)
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An unexpected error occurred during password reset"
         )
+
+@app.post("/submit-order")
+def submit_order(data: OrderRequest, authorization: str = Header(None)):
+    if authorization != "Bearer fake-jwt-token":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authentication required"
+        )
+    # Here you would typically save the order to a database
+    print(f"Order received: {data}")
+    return {"message": "Order submitted successfully!", "order_id": "ORD-12345"}
 
 
 
