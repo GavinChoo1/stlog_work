@@ -22,3 +22,6 @@ Thumbs.db
 
 # Databases
 pg_db/pg_data/
+
+# Logs
+logs/
