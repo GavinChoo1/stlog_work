@@ -163,7 +163,7 @@ function Order() {
   )
 
   return (
-    <div className="login-container" style={{ height: 'auto', padding: '40px 20px' }}>
+    <div className="login-container">
       <div className="bg-blob blob-1"></div>
       <div className="bg-blob blob-2"></div>
 
