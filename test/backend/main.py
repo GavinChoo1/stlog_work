@@ -11,11 +11,61 @@ class ResetPasswordRequest(BaseModel):
     username: str
     new_password: str
 
+from typing import Optional
+from datetime import datetime
+
 class OrderRequest(BaseModel):
-    customer_name: str
-    item: str
-    quantity: int
-    delivery_address: str
+    id: int
+    vertical_id: Optional[int] = None
+    project_id: Optional[int] = None
+    delivery_order_id: Optional[int] = None
+    zone_id: Optional[int] = None
+    start_point_id: Optional[int] = None
+    end_point_id: Optional[int] = None
+    vehicle_id: Optional[int] = None
+    repeat_direction_id: Optional[int] = None
+    vehicle_task_id: Optional[int] = None
+    courier_ms_job_id: Optional[int] = None
+    packing_task_id: Optional[int] = None
+    name: Optional[str] = None
+    description: Optional[str] = None
+    start_date_time: Optional[datetime] = None
+    delivery_date: Optional[datetime] = None
+    duration: Optional[str] = None
+    start_point_instruction: Optional[str] = None
+    end_point_instruction: Optional[str] = None
+    tags: Optional[str] = None
+    error_description: Optional[str] = None
+    closure_reason: Optional[str] = None
+    group_code: Optional[str] = None
+    group_name: Optional[str] = None
+    do_number: Optional[str] = None
+    end_point_code: Optional[str] = None
+    is_product_code_scan_enabled: Optional[bool] = None
+    is_customer_card_scan_enabled: Optional[bool] = None
+    is_nric_scan_enabled: Optional[bool] = None
+    is_sending_email: Optional[bool] = None
+    is_sending_sms: Optional[bool] = None
+    is_sent_email: Optional[bool] = None
+    is_rescheduled: Optional[bool] = None
+    is_courier_ms: Optional[bool] = None
+    external_updated_date_time: Optional[datetime] = None
+    epod_distance_meter: Optional[float] = None
+    priority: Optional[int] = None
+    task_status: Optional[int] = None
+    file_uploaded_count: Optional[int] = None
+    require_start_point_epod: Optional[bool] = None
+    require_end_point_epod: Optional[bool] = None
+    parent_id: Optional[int] = None
+    route_plan_no: Optional[str] = None
+    delivery_route_plan_date_time: Optional[datetime] = None
+    is_sent_consolidated_email: Optional[bool] = None
+    sensitive_do: Optional[bool] = None
+    created_date_time: Optional[datetime] = None
+    modified_date_time: Optional[datetime] = None
+    created_user_id: Optional[str] = None
+    modified_user_id: Optional[str] = None
+
 
 
 app = FastAPI()

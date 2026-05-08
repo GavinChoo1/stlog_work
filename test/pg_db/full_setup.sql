@@ -70,6 +70,67 @@ CREATE TABLE IF NOT EXISTS orders.raw_orders (
 
 ALTER TABLE orders.raw_orders OWNER TO admin;
 
+-- 3. Create the 'raw_hc_operation_orders_5m' table in orders schema
+CREATE TABLE IF NOT EXISTS orders.raw_hc_operation_orders_5m (
+    dtstatdate_h text NOT NULL, 
+    id int NOT NULL,
+    vertical_id int,
+    project_id int,
+    delivery_order_id int,
+    zone_id int,
+    start_point_id int,
+    end_point_id int,
+    vehicle_id int,
+    repeat_direction_id int,
+    vehicle_task_id int,
+    courier_ms_job_id int,
+    packing_task_id int,
+    name varchar(100),
+    description varchar(4000),
+    start_date_time timestamptz,
+    delivery_date timestamptz,
+    duration varchar(100),
+    start_point_instruction varchar(4000),
+    end_point_instruction varchar(4000),
+    tags varchar(4000),
+    error_description varchar(4000),
+    closure_reason varchar(4000),
+    group_code varchar(50),
+    group_name varchar(20),
+    do_number varchar(100),
+    end_point_code varchar(50),
+    is_product_code_scan_enabled boolean,
+    is_customer_card_scan_enabled boolean,
+    is_nric_scan_enabled boolean,
+    is_sending_email boolean,
+    is_sending_sms boolean,
+    is_sent_email boolean,
+    is_rescheduled boolean,
+    is_courier_ms boolean,
+    external_updated_date_time timestamptz,
+    epod_distance_meter float,
+    priority int,
+    task_status int,
+    file_uploaded_count int,
+    require_start_point_epod boolean,
+    require_end_point_epod boolean,
+    parent_id int,
+    route_plan_no varchar(100),
+    delivery_route_plan_date_time timestamptz,
+    is_sent_consolidated_email boolean,
+    sensitive_do boolean,
+    created_date_time timestamptz,
+    modified_date_time timestamptz,
+    created_user_id varchar(128),
+    modified_user_id varchar(128), -- Fixed: Added missing comma
+    
+    -- Fixed: Added 'id' to the PK to ensure ID uniqueness per partition
+    PRIMARY KEY (id, dtstatdate_h) 
+) PARTITION BY RANGE (dtstatdate_h);
+
+ALTER TABLE orders.raw_hc_operation_orders_5m OWNER TO admin;
+
+
 
 
 
